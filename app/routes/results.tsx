@@ -60,9 +60,11 @@ export default function Results() {
                 Ankr Multichain API NFT Gallery
               </Heading>
               {/* add input to body request here or add connect wallet with rainbowkit*/}
-              <Text fontSize="sm">Enter ETH Your Wallet Address</Text>
+              <Text fontSize="sm">
+                gm, enter your Ethereum Wallet Address to display your NFTs
+              </Text>
               <Input placeholder={owner} />
-              <Button size="md">Display my NFTs </Button>
+              <Button size="md">Display my NFTs</Button>
               <Button value={owner} onClick={onCopy} size="sm">
                 {hasCopied ? "Copied" : "Copy Wallet Address"}
               </Button>
