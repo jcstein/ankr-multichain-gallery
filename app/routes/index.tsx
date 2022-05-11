@@ -1,5 +1,4 @@
-import { Box, Heading, HStack, Link as ChakraLink } from '@chakra-ui/react';
-import { Link } from 'remix';
+import { Box, Heading, HStack, Link as ChakraLink } from "@chakra-ui/react";
 
 export default function Index() {
   return (
@@ -8,22 +7,8 @@ export default function Index() {
         Welcome to Remix with Chakra UI!
       </Heading>
       <HStack spacing={4}>
-        <ChakraLink
-          href="https://remix.run/docs"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Remix Docs
-        </ChakraLink>
-        <ChakraLink
-          target="_blank"
-          href="https://chakra-ui.com/docs/getting-started"
-          rel="noreferrer"
-        >
-          Chakra UI Docs
-        </ChakraLink>
-        <ChakraLink as={Link} color="red.400" to="/nothing-here">
-          Nothing here
+        <ChakraLink href="/results" rel="noreferrer">
+          Ankr Multichain API - NFT Gallery
         </ChakraLink>
       </HStack>
     </Box>
