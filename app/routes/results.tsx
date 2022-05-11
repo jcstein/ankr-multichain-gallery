@@ -10,6 +10,8 @@ import {
   SimpleGrid,
   Text,
   Input,
+  Button,
+  useClipboard,
 } from "@chakra-ui/react";
 import theme from "../theme";
 import Fonts from "../Fonts";
@@ -41,6 +43,8 @@ export const loader = async () => {
 
 export default function Results() {
   const { owner, assets } = useLoaderData(); // data.result ----> {owner: somestring, assets: [nft]}
+  const value = `${owner}`;
+  const { hasCopied, onCopy } = useClipboard(value);
   return (
     <ChakraProvider theme={theme}>
       <Fonts />
@@ -56,8 +60,14 @@ export default function Results() {
                 Ankr Multichain API NFT Gallery
               </Heading>
               {/* add input to body request here or add connect wallet with rainbowkit*/}
-              <Input placeholder="Your ETH Wallet Address" />
-              <Text>gm, {owner}</Text>
+              <Text fontSize="sm">Enter ETH Your Wallet Address</Text>
+              <Input placeholder={owner} />
+              <Button size="md">Display my NFTs </Button>
+              <Button value={owner} onClick={onCopy} size="sm">
+                {hasCopied ? "Copied" : "Copy Wallet Address"}
+              </Button>
+              {/* fix truncation of text to keep app responsive */}
+              {/* <Text isTruncated>gm, {owner}</Text> */}
               <SimpleGrid
                 minChildWidth="300px"
                 spacing={{
