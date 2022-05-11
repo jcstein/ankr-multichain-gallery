@@ -74,7 +74,7 @@ export default function Card({
             rounded="xl"
             onError={(i: any) => (i.target.style.display = "none")}
           />
-          <video loop autoPlay hidden>
+          <video loop autoPlay hidden muted>
             <source src={imageSlug} />
           </video>
         </a>
