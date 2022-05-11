@@ -64,6 +64,7 @@ export default function Card({
           </video>
         </a>
       )}
+      {/* this is where I am rendering images/video conditionally and want to make it show correctly not only in safari, but brave/chrome as well */}
       {!isVideo && !isGif && !isImage && (
         <a target="_blank" href={imageSlug} rel="noreferrer">
           <Image

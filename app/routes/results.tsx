@@ -24,7 +24,7 @@ const body = {
   params: {
     // blockchain: "eth",
     walletAddress: "0x186Ea56F0a40c5593A697B3E804968b8C5920Ff3",
-    pageSize: 50,
+    pageSize: 50, // this may be too large of a request. pageToken is returned at end of json, so would like to add pagination as well
     pageToken: "",
   },
   id: 1,
@@ -55,6 +55,7 @@ export default function Results() {
               >
                 Ankr Multichain API NFT Gallery
               </Heading>
+              {/* add input to body request here or add connect wallet with rainbowkit*/}
               <Input placeholder="Your ETH Wallet Address" />
               <Text>gm, {owner}</Text>
               <SimpleGrid
