@@ -1,3 +1,5 @@
+// Imports
+// ========================================================
 import { renderToString } from 'react-dom/server';
 import { CacheProvider } from '@emotion/react';
 import createEmotionServer from '@emotion/server/create-instance';
@@ -8,6 +10,8 @@ import 'dotenv/config';
 import { ServerStyleContext } from './providers/context';
 import { createEmotionCache } from './createEmotionCache';
 
+// Main Server Cache Provider
+// ========================================================
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -41,4 +45,4 @@ export default function handleRequest(
     status: responseStatusCode,
     headers: responseHeaders,
   });
-}
+};

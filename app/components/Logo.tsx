@@ -1,4 +1,5 @@
-import * as React from "react"
+// Imports
+// ========================================================
 import {
   chakra,
   keyframes,
@@ -8,11 +9,14 @@ import {
 } from "@chakra-ui/react"
 import logo from "./logo.svg"
 
+// Animations
 const spin = keyframes`
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 `
 
+// Main Component
+// ========================================================
 export const Logo = forwardRef<ImageProps, "img">((props, ref) => {
   const prefersReducedMotion = usePrefersReducedMotion()
 

@@ -1,3 +1,5 @@
+// Imports
+// ========================================================
 import React from 'react';
 import {
   Links,
@@ -11,23 +13,48 @@ import {
 import type { MetaFunction } from 'remix';
 import { VStack, Heading, ChakraProvider, Text } from '@chakra-ui/react';
 import { withEmotionCache } from '@emotion/react';
-
 import { ServerStyleContext, ClientStyleContext } from './providers/context';
+import { Provider as WagmiProvider, createClient } from "wagmi";
+import theme from "./theme";
 
+// Types
+interface DocumentProps {
+  children: React.ReactNode;
+}
+
+// Config
+// ========================================================
+const client = createClient();
+
+// Meta Data
+// ========================================================
 export const meta: MetaFunction = () => {
-  return { title: 'Chakra UI Boilerplate' };
+  return { title: 'Ankr Multichain API NFT Gallery' };
 };
 
+// Main Component
+// ========================================================
+/**
+ * 
+ * @returns 
+ */
 export default function App() {
   return (
     <Document>
-      <ChakraProvider>
-        <Outlet />
-      </ChakraProvider>
+      <WagmiProvider client={client}>
+        <ChakraProvider theme={theme}>
+          <Outlet />
+        </ChakraProvider>
+      </WagmiProvider>
     </Document>
   );
 }
 
+/**
+ * 
+ * @param param0 
+ * @returns 
+ */
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
   return (
@@ -45,6 +72,10 @@ export function ErrorBoundary({ error }: { error: Error }) {
   );
 }
 
+/**
+ * 
+ * @returns 
+ */
 export function CatchBoundary() {
   let caught = useCatch();
   let message;
@@ -79,12 +110,11 @@ export function CatchBoundary() {
       </VStack>
     </Document>
   );
-}
+};
 
-interface DocumentProps {
-  children: React.ReactNode;
-}
-
+/**
+ * 
+ */
 const Document = withEmotionCache(
   ({ children }: DocumentProps, emotionCache) => {
     const serverStyleData = React.useContext(ServerStyleContext);

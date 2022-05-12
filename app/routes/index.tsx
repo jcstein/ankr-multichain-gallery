@@ -1,9 +1,16 @@
+// Imports
+// ========================================================
+import React, { useEffect, useState } from "react";
+import { useSearchParams } from "@remix-run/react";
+import { LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import Card from "../components/Card";
 import {
-  ChakraProvider,
+  FormLabel,
+  Input,
   Box,
   VStack,
+  HStack,
   Grid,
   Heading,
   Container,
@@ -11,15 +18,20 @@ import {
   Text,
   Button,
 } from "@chakra-ui/react";
-import theme from "../theme";
-import Fonts from "../components/Fonts";
-import { ColorModeSwitcher } from "../components/ColorModeSwitcher";
-import { Logo } from "../components/Logo";
-import { Provider, createClient } from "wagmi";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { FaEthereum } from "react-icons/fa";
+import Fonts from "../components/Fonts";
+import { ColorModeSwitcher } from "../components/ColorModeSwitcher";
+import { Logo } from "../components/Logo";
 
+/**
+ * 
+ */
+// const defaultWalletAddress = '0xb7AE5De3e843a26Ca764605f6Bec916701f88556';
+
+// Profile Component
+// ========================================================
 function Profile() {
   const { data } = useAccount();
   const { connect } = useConnect({
@@ -33,7 +45,10 @@ function Profile() {
         <Button leftIcon={<FaEthereum />} p={3} disabled>
           Connected to {data.address}
         </Button>
-        <Button onClick={() => disconnect()}>Disconnect</Button>
+        <HStack>
+          <Button onClick={() => disconnect()}>Disconnect</Button>
+          <Button onClick={() => window.location.href = `/?walletAddress=${data?.address}`}>Check My NFTs</Button>
+        </HStack>
       </VStack>
     );
   return (
@@ -41,102 +56,160 @@ function Profile() {
       Connect Wallet
     </Button>
   );
-}
-const client = createClient();
-
-const url = "https://rpc.ankr.com/multichain";
-
-const body = {
-  jsonrpc: "2.0",
-  method: "ankr_getNFTsByOwner",
-  params: {
-    // blockchain: "eth", // "eth" "bsc" "fantom" "avalanche" "polygon" "arbitrum" or combination of chains ["eth", "polygon"]
-    walletAddress: "0x186Ea56F0a40c5593A697B3E804968b8C5920Ff3",
-    pageSize: 20,
-    pageToken: "",
-  },
-  id: 1,
 };
 
-export const loader = async () => {
-  const res = await fetch(url, {
+// Requests
+// ========================================================
+/**
+ * 
+ * @param param0 
+ */
+export const fetchNFTsByOwner = async ({ walletAddress, pageSize = 15, pageToken = "" }: { walletAddress: string, pageSize?: number, pageToken?: string }) => {
+  const res = await fetch("https://rpc.ankr.com/multichain", {
     method: "POST",
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      jsonrpc: "2.0",
+      method: "ankr_getNFTsByOwner",
+      params: {
+        // blockchain: "eth", // "eth" "bsc" "fantom" "avalanche" "polygon" "arbitrum" or combination of chains ["eth", "polygon"]
+        walletAddress,
+        pageSize,
+        pageToken,
+      },
+      id: 1,
+    }),
   });
   const data = await res.json();
-  return data.result;
+  return data;
+}
+
+// Main Remix Loader
+// ========================================================
+/**
+ * 
+ * @param args 
+ * @returns 
+ */
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const wallet = url.searchParams.get("walletAddress");
+  if (!wallet) return null;
+
+  const data = await fetchNFTsByOwner({
+    walletAddress: wallet ?? ''
+  });
+  return data?.result ?? null;
 };
 
+// Main Route Component
+// ========================================================
+/**
+ * 
+ * @returns 
+ */
 export default function Index() {
-  const { assets } = useLoaderData(); // data.result ----> {owner: somestring, assets: [nft]}
-  return (
-    <Provider client={client}>
-      <ChakraProvider theme={theme}>
-        <Fonts />
-        <Container p={5} maxW="9xl">
-          <Box textAlign="center" fontSize="xl">
-            <Grid minH="100vh" p={3}>
-              <ColorModeSwitcher justifySelf="flex-end" />
-              <VStack spacing={8}>
-                <Logo h="20vmin" pointerEvents="none" />
-                <Heading
-                  fontSize={{ base: "lg", sm: "2xl", md: "4xl", lg: "5xl" }}
-                >
-                  Ankr Multichain API NFT Gallery
-                </Heading>
-                <Text fontSize="sm">
-                  gm, sign in with your Ethereum Wallet Address to display your
-                  NFTs
-                </Text>
-                <Profile />
-                <SimpleGrid
-                  minChildWidth="300px"
-                  spacing={{
-                    base: "15px",
-                    sm: "15px",
-                    md: "15px",
-                  }}
-                  p={3}
-                  alignItems="flex-start"
-                >
-                  {assets.map((nft: any, key: number) => (
-                    <div key={`nft-${key}`}>
-                      <Card
-                        title={
-                          nft.name
-                            ? nft.name
-                            : "name not found - can the devs do something? 😆"
-                        }
-                        imageSlug={
-                          nft.imageUrl.replace(
-                            "ipfs://",
-                            "https://ipfs.io/ipfs/"
-                          )
-                            ? nft.imageUrl.replace(
-                                "ipfs://",
-                                "https://ipfs.io/ipfs/"
-                              )
-                            : "https://raw.githubusercontent.com/jcstein/jpegs/main/image-not-found-01.png"
-                        }
-                        blockchain={nft.blockchain}
-                        collection={
-                          nft.collectionName
-                            ? nft.collectionName
-                            : "collectionName not found"
-                        }
-                        tokenID={nft.tokenId}
-                        symbol={nft.symbol}
-                        type={nft.contractType}
-                        contractAddy={nft.contractAddress}
-                      />
-                    </div>
-                  ))}
-                </SimpleGrid>
-              </VStack>
-            </Grid>
-          </Box>
-        </Container>
-      </ChakraProvider>
-    </Provider>
+  // State / Props
+  const { data: accountData } = useAccount();
+  const [searchParams] = useSearchParams();
+  const [inputValue, setInputValue] = useState(() => {
+    return searchParams.get('walletAddress') ?? ''
+  });
+  const loader = useLoaderData();
+
+  // Functions
+  /**
+   * 
+   * @param event 
+   */
+  const onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+  }
+
+  /**
+   * 
+   * @param url 
+   */
+  const isSupportedAsset = (url: string) => {
+    return ['png', 'jpg', 'jpeg', 'gif', 'mp4'].includes(url);
+  }
+
+  // Hooks
+  useEffect(() => {
+    if (!accountData?.address) return;
+    setInputValue(accountData?.address);
+  }, [accountData?.address]);
+
+  // Render / UI
+  return (<div>
+    <Fonts />
+    <Container p={5} maxW="9xl">
+      <Box textAlign="center" fontSize="xl">
+        <Grid minH="100vh" p={3}>
+          <ColorModeSwitcher justifySelf="flex-end" />
+          <VStack spacing={8}>
+            <Logo h="20vmin" pointerEvents="none" />
+            <Heading
+              fontSize={{ base: "lg", sm: "2xl", md: "4xl", lg: "5xl" }}
+            >
+              Ankr Multichain API NFT Gallery
+            </Heading>
+            <Text fontSize="sm">
+              gm, sign in with your Ethereum Wallet Address to display your
+              NFTs
+            </Text>
+            <Profile />
+            <form method="get" action={`/`}>
+              <FormLabel display="block" textAlign="center" htmlFor="walletAddress">Wallet Address</FormLabel>
+              <Input placeholder="Ex: 0x1234" margin="0 0 10px 0" id="walletAddress" name="walletAddress" textAlign="center" onChange={onChangeInput} value={inputValue} />
+              <Button type="submit" display="block" width="100%">Look Up</Button>
+            </form>
+            <SimpleGrid
+              minChildWidth="300px"
+              spacing={{
+                base: "15px",
+                sm: "15px",
+                md: "15px",
+              }}
+              p={3}
+              alignItems="flex-start"
+            >
+              {loader?.assets.map((nft: any, key: number) => (
+                <div key={`nft-${key}`}>
+                  <Card
+                    title={
+                      nft.name
+                        ? nft.name
+                        : "name not found - can the devs do something? 😆"
+                    }
+                    imageSlug={
+                      nft.imageUrl.replace(
+                        "ipfs://",
+                        "https://ipfs.io/ipfs/"
+                      ) && isSupportedAsset(nft.imageUrl.slice(-3).toLowerCase()) // verify image by getting extension
+                        ? nft.imageUrl.replace(
+                          "ipfs://",
+                          "https://ipfs.io/ipfs/"
+                        )
+                        : "https://raw.githubusercontent.com/jcstein/jpegs/main/image-not-found-01.png"
+                    }
+                    blockchain={nft.blockchain}
+                    collection={
+                      nft.collectionName
+                        ? nft.collectionName
+                        : "collectionName not found"
+                    }
+                    tokenID={nft.tokenId}
+                    symbol={nft.symbol}
+                    type={nft.contractType}
+                    contractAddy={nft.contractAddress}
+                  />
+                </div>
+              ))}
+            </SimpleGrid>
+          </VStack>
+        </Grid>
+      </Box>
+    </Container>
+  </div>
   );
-}
+};
