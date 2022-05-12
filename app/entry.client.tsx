@@ -3,7 +3,7 @@ import { hydrate } from 'react-dom';
 import { CacheProvider } from '@emotion/react';
 import { RemixBrowser } from 'remix';
 
-import { ClientStyleContext } from './context';
+import { ClientStyleContext } from './providers/context';
 import { createEmotionCache } from './createEmotionCache';
 
 interface ClientCacheProviderProps {
