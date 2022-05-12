@@ -1,3 +1,5 @@
+// Imports
+// ========================================================
 import {
   VStack,
   useColorModeValue,
@@ -6,6 +8,8 @@ import {
   useClipboard,
   Button,
 } from "@chakra-ui/react";
+
+// Types
 export interface CardProps {
   title?: string;
   imageSlug?: string;
@@ -16,6 +20,9 @@ export interface CardProps {
   type?: string;
   contractAddy?: string;
 }
+
+// Main Card Component
+// ========================================================
 export default function Card({
   title,
   imageSlug,

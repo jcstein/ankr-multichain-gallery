@@ -1,5 +1,9 @@
+// Imports
+// ========================================================
 import { Global } from "@emotion/react";
 
+// Main Component
+// ========================================================
 const Fonts = () => (
   <Global
     styles={`
