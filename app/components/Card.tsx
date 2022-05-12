@@ -58,7 +58,7 @@ export default function Card({
       )}
       {isVideo && (
         <a target="_blank" href={imageSlug} rel="noreferrer">
-          <video loop autoPlay>
+          <video loop autoPlay muted>
             <source src={imageSlug} />
           </video>
         </a>

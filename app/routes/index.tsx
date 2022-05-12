@@ -42,7 +42,6 @@ function Profile() {
     </Button>
   );
 }
-
 const client = createClient();
 
 const url = "https://rpc.ankr.com/multichain";
@@ -53,7 +52,7 @@ const body = {
   params: {
     // blockchain: "eth", // "eth" "bsc" "fantom" "avalanche" "polygon" "arbitrum" or combination of chains ["eth", "polygon"]
     walletAddress: "0x186Ea56F0a40c5593A697B3E804968b8C5920Ff3",
-    pageSize: 15,
+    pageSize: 20,
     pageToken: "",
   },
   id: 1,
