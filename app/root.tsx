@@ -24,7 +24,9 @@ interface DocumentProps {
 
 // Config
 // ========================================================
-const client = createClient();
+const client = createClient({
+  autoConnect: true
+});
 
 // Meta Data
 // ========================================================
