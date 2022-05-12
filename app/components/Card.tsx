@@ -6,7 +6,6 @@ import {
   useClipboard,
   Button,
 } from "@chakra-ui/react";
-
 export interface CardProps {
   title?: string;
   imageSlug?: string;
@@ -79,7 +78,7 @@ export default function Card({
           </video>
         </a>
       )}
-      <VStack mb={2}>
+      <VStack paddingBottom={2}>
         <Heading size="md">{title}</Heading>
         <Heading size="sm">Blockchain: {blockchain}</Heading>
         <Heading size="xs">Collection: {collection}</Heading>
