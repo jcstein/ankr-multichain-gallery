@@ -2,7 +2,7 @@
 // ========================================================
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "@remix-run/react";
-import { LoaderFunction } from "@remix-run/node";
+import { LoaderFunction } from "@remix-run/server-runtime";
 import { useLoaderData } from "@remix-run/react";
 import Card from "../components/Card";
 import {
@@ -18,17 +18,12 @@ import {
   Text,
   Button,
 } from "@chakra-ui/react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { FaEthereum } from "react-icons/fa";
 import Fonts from "../components/Fonts";
 import { ColorModeSwitcher } from "../components/ColorModeSwitcher";
 import { Logo } from "../components/Logo";
-
-/**
- * 
- */
-// const defaultWalletAddress = '0xb7AE5De3e843a26Ca764605f6Bec916701f88556';
 
 // Profile Component
 // ========================================================
@@ -38,16 +33,23 @@ function Profile() {
     connector: new InjectedConnector(),
   });
   const { disconnect } = useDisconnect();
+  const { data: ensName } = useEnsName({ address: data?.address });
 
   if (data)
     return (
       <VStack>
         <Button leftIcon={<FaEthereum />} p={3} disabled>
-          Connected to {data.address}
+          Connected to {ensName ?? data.address}
         </Button>
         <HStack>
           <Button onClick={() => disconnect()}>Disconnect</Button>
-          <Button onClick={() => window.location.href = `/?walletAddress=${data?.address}`}>Check My NFTs</Button>
+          <Button
+            onClick={() =>
+              (window.location.href = `/?walletAddress=${data?.address}`)
+            }
+          >
+            Check My NFTs
+          </Button>
         </HStack>
       </VStack>
     );
@@ -56,15 +58,23 @@ function Profile() {
       Connect Wallet
     </Button>
   );
-};
+}
 
 // Requests
 // ========================================================
 /**
- * 
- * @param param0 
+ *
+ * @param param0
  */
-export const fetchNFTsByOwner = async ({ walletAddress, pageSize = 15, pageToken = "" }: { walletAddress: string, pageSize?: number, pageToken?: string }) => {
+export const fetchNFTsByOwner = async ({
+  walletAddress,
+  pageSize = 30,
+  pageToken = "",
+}: {
+  walletAddress: string;
+  pageSize?: number;
+  pageToken?: string;
+}) => {
   const res = await fetch("https://rpc.ankr.com/multichain", {
     method: "POST",
     body: JSON.stringify({
@@ -81,14 +91,14 @@ export const fetchNFTsByOwner = async ({ walletAddress, pageSize = 15, pageToken
   });
   const data = await res.json();
   return data;
-}
+};
 
 // Main Remix Loader
 // ========================================================
 /**
- * 
- * @param args 
- * @returns 
+ *
+ * @param args
+ * @returns
  */
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -96,7 +106,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   if (!wallet) return null;
 
   const data = await fetchNFTsByOwner({
-    walletAddress: wallet ?? ''
+    walletAddress: wallet ?? "",
   });
   return data?.result ?? null;
 };
@@ -104,34 +114,34 @@ export const loader: LoaderFunction = async ({ request }) => {
 // Main Route Component
 // ========================================================
 /**
- * 
- * @returns 
+ *
+ * @returns
  */
 export default function Index() {
   // State / Props
   const { data: accountData } = useAccount();
   const [searchParams] = useSearchParams();
   const [inputValue, setInputValue] = useState(() => {
-    return searchParams.get('walletAddress') ?? ''
+    return searchParams.get("walletAddress") ?? "";
   });
   const loader = useLoaderData();
 
   // Functions
   /**
-   * 
-   * @param event 
+   *
+   * @param event
    */
   const onChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
-  }
+  };
 
   /**
-   * 
-   * @param url 
+   *
+   * @param url
    */
   const isSupportedAsset = (url: string) => {
-    return ['png', 'jpg', 'jpeg', 'gif', 'mp4'].includes(url);
-  }
+    return ["png", "jpg", "jpeg", "gif", "mp4"].includes(url);
+  };
 
   // Hooks
   useEffect(() => {
@@ -140,76 +150,95 @@ export default function Index() {
   }, [accountData?.address]);
 
   // Render / UI
-  return (<div>
-    <Fonts />
-    <Container p={5} maxW="9xl">
-      <Box textAlign="center" fontSize="xl">
-        <Grid minH="100vh" p={3}>
-          <ColorModeSwitcher justifySelf="flex-end" />
-          <VStack spacing={8}>
-            <Logo h="20vmin" pointerEvents="none" />
-            <Heading
-              fontSize={{ base: "lg", sm: "2xl", md: "4xl", lg: "5xl" }}
-            >
-              Ankr Multichain API NFT Gallery
-            </Heading>
-            <Text fontSize="sm">
-              gm, sign in with your Ethereum Wallet Address to display your
-              NFTs
-            </Text>
-            <Profile />
-            <form method="get" action={`/`}>
-              <FormLabel display="block" textAlign="center" htmlFor="walletAddress">Wallet Address</FormLabel>
-              <Input placeholder="Ex: 0x1234" margin="0 0 10px 0" id="walletAddress" name="walletAddress" textAlign="center" onChange={onChangeInput} value={inputValue} />
-              <Button type="submit" display="block" width="100%">Look Up</Button>
-            </form>
-            <SimpleGrid
-              minChildWidth="300px"
-              spacing={{
-                base: "15px",
-                sm: "15px",
-                md: "15px",
-              }}
-              p={3}
-              alignItems="flex-start"
-            >
-              {loader?.assets.map((nft: any, key: number) => (
-                <div key={`nft-${key}`}>
-                  <Card
-                    title={
-                      nft.name
-                        ? nft.name
-                        : "name not found - can the devs do something? 😆"
-                    }
-                    imageSlug={
-                      nft.imageUrl.replace(
-                        "ipfs://",
-                        "https://ipfs.io/ipfs/"
-                      ) && isSupportedAsset(nft.imageUrl.slice(-3).toLowerCase()) // verify image by getting extension
-                        ? nft.imageUrl.replace(
+  return (
+    <div>
+      <Fonts />
+      <Container p={5} maxW="9xl">
+        <Box textAlign="center" fontSize="xl">
+          <Grid minH="100vh" p={3}>
+            <ColorModeSwitcher justifySelf="flex-end" />
+            <VStack spacing={8}>
+              <a href="/">
+                <Logo h="20vmin" pointerEvents="none" />
+              </a>
+              <Heading
+                fontSize={{ base: "lg", sm: "2xl", md: "4xl", lg: "5xl" }}
+              >
+                Ankr Multichain API NFT Gallery
+              </Heading>
+              <Text fontSize="sm">
+                gm, sign in with your Ethereum Wallet to display your NFTs
+              </Text>
+              <Profile />
+              <form method="get" action={`/`}>
+                <FormLabel
+                  display="block"
+                  textAlign="center"
+                  htmlFor="walletAddress"
+                >
+                  Wallet Address
+                </FormLabel>
+                <Input
+                  placeholder="Ex: 0x1234"
+                  margin="0 0 10px 0"
+                  id="walletAddress"
+                  name="walletAddress"
+                  textAlign="center"
+                  onChange={onChangeInput}
+                  value={inputValue}
+                />
+                <Button type="submit" display="block" width="100%">
+                  Look Up
+                </Button>
+              </form>
+              <SimpleGrid
+                minChildWidth="300px"
+                spacing={{
+                  base: "15px",
+                  sm: "15px",
+                  md: "15px",
+                }}
+                p={3}
+                alignItems="flex-start"
+              >
+                {loader?.assets.map((nft: any, key: number) => (
+                  <div key={`nft-${key}`}>
+                    <Card
+                      title={
+                        nft.name
+                          ? nft.name
+                          : "name not found - can the devs do something? 😆"
+                      }
+                      imageSlug={
+                        nft.imageUrl.replace(
                           "ipfs://",
                           "https://ipfs.io/ipfs/"
-                        )
-                        : "https://raw.githubusercontent.com/jcstein/jpegs/main/image-not-found-01.png"
-                    }
-                    blockchain={nft.blockchain}
-                    collection={
-                      nft.collectionName
-                        ? nft.collectionName
-                        : "collectionName not found"
-                    }
-                    tokenID={nft.tokenId}
-                    symbol={nft.symbol}
-                    type={nft.contractType}
-                    contractAddy={nft.contractAddress}
-                  />
-                </div>
-              ))}
-            </SimpleGrid>
-          </VStack>
-        </Grid>
-      </Box>
-    </Container>
-  </div>
+                        ) &&
+                        isSupportedAsset(nft.imageUrl.slice(-3).toLowerCase()) // verify image by getting extension
+                          ? nft.imageUrl.replace(
+                              "ipfs://",
+                              "https://ipfs.io/ipfs/"
+                            )
+                          : "https://raw.githubusercontent.com/jcstein/jpegs/main/image-not-found-01.png"
+                      }
+                      blockchain={nft.blockchain}
+                      collection={
+                        nft.collectionName
+                          ? nft.collectionName
+                          : "collectionName not found"
+                      }
+                      tokenID={nft.tokenId}
+                      symbol={nft.symbol}
+                      type={nft.contractType}
+                      contractAddy={nft.contractAddress}
+                    />
+                  </div>
+                ))}
+              </SimpleGrid>
+            </VStack>
+          </Grid>
+        </Box>
+      </Container>
+    </div>
   );
-};
+}
