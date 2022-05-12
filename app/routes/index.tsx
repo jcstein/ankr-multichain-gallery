@@ -21,6 +21,7 @@ import {
 import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { FaEthereum } from "react-icons/fa";
+import { GiMagnifyingGlass } from "react-icons/gi";
 import Fonts from "../components/Fonts";
 import { ColorModeSwitcher } from "../components/ColorModeSwitcher";
 import { Logo } from "../components/Logo";
@@ -44,6 +45,7 @@ function Profile() {
         <HStack>
           <Button onClick={() => disconnect()}>Disconnect</Button>
           <Button
+            leftIcon={<GiMagnifyingGlass />}
             onClick={() =>
               (window.location.href = `/?walletAddress=${data?.address}`)
             }
@@ -175,6 +177,7 @@ export default function Index() {
                   display="block"
                   textAlign="center"
                   htmlFor="walletAddress"
+                  margin="0 0 6px 0"
                 >
                   Wallet Address
                 </FormLabel>
@@ -187,7 +190,12 @@ export default function Index() {
                   onChange={onChangeInput}
                   value={inputValue}
                 />
-                <Button type="submit" display="block" width="100%">
+                <Button
+                  leftIcon={<GiMagnifyingGlass />}
+                  type="submit"
+                  display="block"
+                  width="100%"
+                >
                   Look Up
                 </Button>
               </form>
