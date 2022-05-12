@@ -1,6 +1,6 @@
 # Remix + ChakraUI
 
-Big thanks to [Primos](https://github.com/primos63) and [No Quatrter](https://github.com/NoQuarterTeam) for inspiration about this boilerplate.
+Big thanks to [Primos](https://github.com/primos63), [No Quatrter](https://github.com/NoQuarterTeam) for inspiration about this boilerplate, and [codingwithmanny](https://github.com/codingwithmanny) for the edits.
 
 - [Remix](https://remix.run/docs/en/v1)
 - [Chakra UI](https://chakra-ui.com/docs)
@@ -38,20 +38,42 @@ npm run dev;
 First, build your app for production:
 
 ```bash
-npm run build;
-# yarn build;
+npm run build:local;
+# yarn build:local;
 ```
 
 Then run the app in production mode:
 
 ```bash
-npm start;
-# yarn start
+npm start:local;
+# yarn start:local
+```
+
+---
+
+## Debug Mode
+
+If you want to see the result of the `remix.config.js`, simply add an extra `DEBUG` environment variable before your commands;
+
+```bash
+DEBUG=true npm run build:local;
+# DEBUG=true yarn build:local;
+
+# Expected Output:
+# {
+#   config: {
+#     serverBuildTarget: undefined,
+#     server: undefined,
+#     ignoredRouteFiles: [ '.*' ]
+#   }
+# }
 ```
 
 ---
 
 ## Deployment
+
+Currently the `remix.config.js` is set to support `vercel`
 
 Now you'll need to pick a host to deploy it to.
 
