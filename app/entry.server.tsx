@@ -5,7 +5,7 @@ import type { EntryContext } from 'remix';
 import { RemixServer } from 'remix';
 import 'dotenv/config';
 
-import { ServerStyleContext } from './context';
+import { ServerStyleContext } from './providers/context';
 import { createEmotionCache } from './createEmotionCache';
 
 export default function handleRequest(

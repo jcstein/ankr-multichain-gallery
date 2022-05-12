@@ -12,7 +12,7 @@ import type { MetaFunction } from 'remix';
 import { VStack, Heading, ChakraProvider, Text } from '@chakra-ui/react';
 import { withEmotionCache } from '@emotion/react';
 
-import { ServerStyleContext, ClientStyleContext } from './context';
+import { ServerStyleContext, ClientStyleContext } from './providers/context';
 
 export const meta: MetaFunction = () => {
   return { title: 'Chakra UI Boilerplate' };
@@ -87,7 +87,7 @@ interface DocumentProps {
 
 const Document = withEmotionCache(
   ({ children }: DocumentProps, emotionCache) => {
-    const serverSyleData = React.useContext(ServerStyleContext);
+    const serverStyleData = React.useContext(ServerStyleContext);
     const clientStyleData = React.useContext(ClientStyleContext);
 
     // Only executed on client
@@ -117,9 +117,9 @@ const Document = withEmotionCache(
           />
           <Meta />
           <Links />
-          {serverSyleData?.map(({ key, ids, css }) => (
+          {serverStyleData?.map(({ key, ids, css }) => (
             <style
-              key={key}
+              key={`serverStyleData-${key}`}
               data-emotion={`${key} ${ids.join(' ')}`}
               dangerouslySetInnerHTML={{ __html: css }}
             />
