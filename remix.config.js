@@ -1,12 +1,18 @@
 /**
  * @type {import('@remix-run/dev').AppConfig}
  */
-module.exports = {
-  serverBuildTarget: "vercel",
+
+/**
+ * 
+ */
+const isLocalBuildOrDevelopment = process.env.BUILD_ENV === "local" || process.env.NODE_ENV === "development";
+
+const config = {
+  serverBuildTarget: isLocalBuildOrDevelopment ? undefined : "vercel",
   // When running locally in development mode, we use the built in remix
   // server. This does not understand the vercel lambda module format,
   // so we default back to the standard build output.
-  server: process.env.NODE_ENV === "development" ? undefined : "./server.js",
+  server: isLocalBuildOrDevelopment ? undefined : "./server.js",
   ignoredRouteFiles: [".*"],
   // appDirectory: "app",
   // assetsBuildDirectory: "public/build",
@@ -14,3 +20,9 @@ module.exports = {
   // publicPath: "/build/",
   // devServerPort: 8002
 };
+
+if (process.env.DEBUG) {
+  console.log({ config });
+}
+
+module.exports = config;
