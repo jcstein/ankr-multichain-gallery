@@ -53,7 +53,7 @@ const body = {
   params: {
     // blockchain: "eth", // "eth" "bsc" "fantom" "avalanche" "polygon" "arbitrum" or combination of chains ["eth", "polygon"]
     walletAddress: "0x186Ea56F0a40c5593A697B3E804968b8C5920Ff3",
-    pageSize: 5, // this may be too large of a request. pageToken is returned at end of json, so would like to add pagination as well
+    pageSize: 15,
     pageToken: "",
   },
   id: 1,
