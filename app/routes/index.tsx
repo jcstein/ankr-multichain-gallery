@@ -226,6 +226,17 @@ export default function Index() {
                             )
                           : "https://raw.githubusercontent.com/jcstein/jpegs/main/image-not-found-01.png"
                       }
+                      // imageSlug={
+                      //   nft.imageUrl.replace(
+                      //     "ipfs://",
+                      //     "https://ipfs.io/ipfs/"
+                      //   ) && isSupportedAsset(nft.imageUrl.slice(-3).toLowerCase()) // verify image by getting extension
+                      //     ? nft.imageUrl.replace(
+                      //       "ipfs://",
+                      //       "https://ipfs.io/ipfs/"
+                      //     )
+                      //     : "https://raw.githubusercontent.com/jcstein/jpegs/main/image-not-found-01.png"
+                      // }
                       blockchain={nft.blockchain}
                       collection={
                         nft.collectionName
