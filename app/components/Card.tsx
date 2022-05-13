@@ -70,7 +70,6 @@ export default function Card({
           </video>
         </a>
       )}
-      {/* this is where I am rendering images/video conditionally and want to make it show correctly not only in safari, but brave/chrome as well */}
       {!isVideo && !isGif && !isImage && (
         <a target="_blank" href={imageSlug} rel="noreferrer">
           <Image
@@ -86,7 +85,9 @@ export default function Card({
         </a>
       )}
       <VStack paddingBottom={2}>
-        <Heading size="md">{title}</Heading>
+        <a target="_blank" href={imageSlug} rel="noreferrer">
+          <Heading size="md">{title}</Heading>
+        </a>
         <Heading size="sm">Blockchain: {blockchain}</Heading>
         <Heading size="xs">Collection: {collection}</Heading>
         <Heading size="xs">Token ID: {tokenID}</Heading>

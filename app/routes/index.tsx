@@ -70,7 +70,7 @@ function Profile() {
  */
 export const fetchNFTsByOwner = async ({
   walletAddress,
-  pageSize = 30,
+  pageSize = 45,
   pageToken = "",
 }: {
   walletAddress: string;
@@ -141,9 +141,9 @@ export default function Index() {
    *
    * @param url
    */
-  const isSupportedAsset = (url: string) => {
-    return ["png", "jpg", "jpeg", "gif", "mp4"].includes(url);
-  };
+  // const isSupportedAsset = (url: string) => {
+  //   return ["png", "jpg", "jpeg", "gif", "mp4"].includes(url);
+  // };
 
   // Hooks
   useEffect(() => {
@@ -168,8 +168,9 @@ export default function Index() {
               >
                 Ankr Multichain API NFT Gallery
               </Heading>
-              <Text fontSize="sm">
-                gm, sign in with your Ethereum Wallet to display your NFTs
+              <Text fontSize="md">
+                gm, sign in with your Ethereum Wallet or enter your address
+                below to display your NFTs
               </Text>
               <Profile />
               <form method="get" action={`/`}>
@@ -218,11 +219,7 @@ export default function Index() {
                           : "name not found - can the devs do something? 😆"
                       }
                       imageSlug={
-                        nft.imageUrl.replace(
-                          "ipfs://",
-                          "https://ipfs.io/ipfs/"
-                        ) &&
-                        isSupportedAsset(nft.imageUrl.slice(-3).toLowerCase()) // verify image by getting extension
+                        nft.imageUrl.replace("ipfs://", "https://ipfs.io/ipfs/")
                           ? nft.imageUrl.replace(
                               "ipfs://",
                               "https://ipfs.io/ipfs/"
